@@ -1,0 +1,76 @@
+// inline-block
+$inline-block-alignment: middle !default; // 设置一个默认对齐方式
+// 跨浏览器实现inline-block
+@mixin inline-block ($alignment: $inline-block-alignment) {
+    display: inline-block;
+    @if $alignment and $alignment != none {
+        vertical-align: $alignment;
+    }
+    @if $legacy-support-for-ie {
+        *vertical-align: auto;
+        zoom: 1;
+        *display: inline;
+    }
+}
+
+// 清除浮动
+// 混合宏格式
+@mixin clearfix {
+    @if $legacy-support-for-ie {
+        *zoom: 1;
+    }
+    &:before,
+    &:after {
+        content: '';
+        display: table;
+    }
+    &:after {
+        clear: both;
+        overflow: hidden;
+    }
+}
+// 占位符格式
+%clearfix {
+    @include clearfix;
+}
+
+// 就是在样式中使用背景图片来替换掉HTML模板中的文本内容，从而达到一种样式无法实现的页面渲染效果
+// 混合宏格式
+@mixin ir {
+    background-color: transparent;
+    border: 0;
+    overflow: hidden;
+    @if $legacy-support-for-ie {
+        *text-indent: -150%;
+    }
+    &:before {
+        content: '';
+        display: block;
+        width: 0;
+        height: 150%;
+    }
+}
+// 占位符格式
+%ir {
+    @include ir;
+}
+
+// 截取文本
+// 混合宏格式
+@mixin singleline-ellipsis ($substract: 0) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100% - $substract;
+}
+// 占位符格式 
+%singleline-ellipsis {
+    @include singleline-ellipsis;
+}
+
+// 表单disabled
+ @mixin disabled ($bgColor: #e6e6e6,$textColor:#ababab) { 
+    background-color: $bgColor !important; 
+    color: $textColor !important; 
+    cursor: not-allowed !important; 
+}
