@@ -2,6 +2,8 @@
 
 Sass笔记
 
+[Sass函数]()
+
 ----------
 
 ## Sass安装 ##
@@ -22,6 +24,15 @@ Sass笔记
     
 ## Sass变量声明 ##
 
+* sass的数据类型：
+
+	- null是Sass中最基本的数据类型，它既不是true也不是false，而表示的是空
+	- Boolean只有两个值：true和false。在Sass中，只有自身是false和null才会返回false，其他一切都将返回true
+	- Number
+	- Strings
+	- Colors
+	- Maps
+
 * sass的变量包含三个部分，1.声明变量的符号'$'，2.变量名称，3.赋予变量的值
 
 * sass 的默认变量仅需要在值后面加上 !default 即可
@@ -34,6 +45,33 @@ Sass笔记
     		line-height: $baseLineHeight; 
 		}
 		//line-height: 2;
+
+* 传递参数的时候，当参数是多个值，且以`,``分隔的时候，可以在参数后面加`...``
+		
+		$box-shadow:0 0 3px rgba(0,0,0,0.3),inset 0 0 3px rgba(255,255,255,0.3);
+		@mixin box-shadow($shadow...){ 
+			-webkit-box-shadow:$shadow; 
+			-moz-box-shadow:$shadow; 
+			box-shadow:$shadow; 
+		}
+
+* 变量如果用在属性或者选择器上，就得以`#{}`包裹起来
+
+		$btnClass: btn !default; 
+		$borderDirection: top !default; 
+		.#{$btnClass}{ 
+			border-#{$borderDirection}:1px solid #ccc; 
+		}
+
+* 多个值声明在一个变量中，通过`nth($var,index)`来获取第几个值
+
+		$linkColor: red blue !default; 
+		a { 
+			color:nth($linkColor,1); 
+			&:hover{ 
+				color:nth($linkColor,2); 
+			} 
+		}
 
 ## sass混合宏 ##
 
@@ -82,6 +120,20 @@ Sass笔记
 
 	Sass 在调用相同的混合宏时，并不能智能的将相同的样式代码块合并在一起。这也是 Sass 的混合宏最不足之处，会生成冗余的代码块
 
+* 除了传递参数，也可以直接传递一个样式片段给Mixin。在Mixin中，添加@content;语句，然后传递的样式片段就会代替@content;出现在相应的位置
+
+		@mixin button { 
+			font-size: 1em; 
+			padding: 0.5em 1.0em; 
+			@content; // 编译的时候传递的片段会替代@content
+		} 
+		.button-green { 
+			@include button { 
+				background: green; // 传递的片段
+				color: red;
+			} 
+		}
+
 ## sass扩展和继承 ##
 
 * Sass 中是通过关键词 `@extend`来继承已存在的类样式块，从而实现代码的继承。在 Sass 中的继承，可以继承类样式块中所有样式代码，而且编译出来的 CSS 会将选择器合并在一起，形成组合选择器
@@ -121,7 +173,7 @@ Sass笔记
 * 如果你的代码块不需要专任何变量参数，而且有一个基类已在文件中存在，那么建议使用 Sass 的继承
 
 * 编译出来的 CSS 代码和使用继承基本上是相同，只是不会在代码中生成占位符的选择器。那么占位符和继承的主要区别的，“占位符是独立定义，不调用的时候是不会在 CSS 中产生任何代码；继承是首先有一个基类存在，不管调用与不调用，基类的样式都将会出现在编译出来的 CSS 代码中”
-![混合宏、继承和占位符的区别](http://img.mukewang.com/55263aa30001913307940364.jpg)
+![混合宏、继承和占位符的区别](./images/extend.png)
 	
 ## sass运算符 ##
 
@@ -160,19 +212,22 @@ Sass笔记
 			content: "Foo " + Bar; // content: "Foo Bar";
 			font-family: sans- + "serif"; // font-family: sans-serif;
 		}
+* 逻辑运算符：and，与操作；not，非操作；or，或操作
+
+		@if (length($list-map) > 2 or not (length($list-map) == 3)) {...}
 
 ## sass函数 ##
 
-* @if 指令是一个 SassScript，它可以根据条件来处理样式块，如果条件为 true 返回一个样式块，反之 false 返回另一个样式块。在 Sass 中除了 @if 之，还可以配合 @else if 和 @else 一起使用
+* `@if` 指令是一个 SassScript，它可以根据条件来处理样式块，如果条件为 true 返回一个样式块，反之 false 返回另一个样式块。在 Sass 中除了 @if 之，还可以配合 @else if 和 @else 一起使用
 
-* Sass 的 @for 循环中有两种方式：
+* Sass 的 `@for` 循环中有两种方式：
 		
 		@for $i from <start> through <end>
 		@for $i from <start> to <end>
 		
 		// $i 表示变量,start 表示起始值,end 表示结束值,两个的区别是关键字 through 表示包括 end 这个数，而 to 则不包括 end 这个数
 
-* @while 指令也需要 SassScript 表达式（像其他指令一样），并且会生成不同的样式块，直到表达式值为 false 时停止循环。这个和 @for 指令很相似，只要 @while 后面的条件为 true 就会执行
+* `@while` 指令也需要 SassScript 表达式（像其他指令一样），并且会生成不同的样式块，直到表达式值为 false 时停止循环。这个和 @for 指令很相似，只要 @while 后面的条件为 true 就会执行
 
 		//SCSS
 		$types: 4;
@@ -185,7 +240,7 @@ Sass笔记
 		    $types: $types - 1;
 		}
 
-* @each 循环就是去遍历一个列表，然后从列表中取出对应的值，@each 循环指令的形式：`@each $var in <list>`
+* `@each` 循环就是去遍历一个列表，然后从列表中取出对应的值，@each 循环指令的形式：`@each $var in <list>`
 
 		$list: adam john wynn mason kuroir;//$list 就是一个列表
 		
@@ -203,47 +258,47 @@ Sass笔记
 
 * 字符串函数顾名思意是用来处理字符串的函数。Sass 的字符串函数主要包括两个函数：
 
-	- unquote($string)：删除字符串中的引号
-    - quote($string)：给字符串添加引号，使用 quote() 函数只能给字符串增加双引号，而且字符串中间有单引号或者空格时，需要用单引号或双引号括起，同时 quote() 碰到特殊符号，比如： !、?、> 等，除中折号 - 和 下划线_ 都需要使用双引号括起
+	- `unquote($string)`：删除字符串中的引号
+    - `quote($string)`：给字符串添加引号，使用 quote() 函数只能给字符串增加双引号，而且字符串中间有单引号或者空格时，需要用单引号或双引号括起，同时 quote() 碰到特殊符号，比如： !、?、> 等，除中折号 - 和 下划线_ 都需要使用双引号括起
 
-* 字符串函数-To-upper-case()、To-lower-case()
+* 字符串函数-`To-upper-case()`、`To-lower-case()`
 
 * 数字函数提要针对数字方面提供一系列的函数功能：
-	- percentage($value)：将一个不带单位的数转换成百分比值；转换的值是一个带有单位的值会报错
-	- round($value)：将数值四舍五入，转换成一个最接近的整数；
-	- ceil($value)：将大于自己的小数转换成下一位整数；
-	- floor($value)：将一个数去除他的小数部分；
-	- abs($value)：返回一个数的绝对值；
-	- min($numbers…)：找出几个数值之间的最小值；同时出现两种不同类型的单位
-	- max($numbers…)：找出几个数值之间的最大值；同时出现两种不同类型的单位
-	- random(): 获取随机数
+	- `percentage($value)`：将一个不带单位的数转换成百分比值；转换的值是一个带有单位的值会报错
+	- `round($value)`：将数值四舍五入，转换成一个最接近的整数；
+	- `ceil($value)`：将大于自己的小数转换成下一位整数；
+	- `floor($value)`：将一个数去除他的小数部分；
+	- `abs($value)`：返回一个数的绝对值；
+	- `min($numbers…)`：找出几个数值之间的最小值；同时出现两种不同类型的单位
+	- `max($numbers…)`：找出几个数值之间的最大值；同时出现两种不同类型的单位
+	- `random()`: 获取随机数
 
 * 列表函数主要包括一些对列表参数的函数使用，主要包括以下几种：
-	- length($list)：返回一个列表的长度值；函数中的列表参数之间使用空格隔开，不能使用逗号
-	- nth($list, $n)：返回一个列表中指定的某个标签值，1 是指列表中的第一个标签值
-	- join($list1, $list2, [$separator])：将两个列给连接在一起，变成一个列表；只能将两个列表连接成一个列表。join() 函数中 $separator 除了默认值 auto 之外，还有 comma 和 space 两个值，其中 comma 值指定列表中的列表项值之间使用逗号（,）分隔，space 值指定列表中的列表项值之间使用空格（ ）分隔
+	- `length($list)`：返回一个列表的长度值；函数中的列表参数之间使用空格隔开，不能使用逗号
+	- `nth($list, $n)`：返回一个列表中指定的某个标签值，1 是指列表中的第一个标签值
+	- `join($list1, $list2, [$separator])`：将两个列给连接在一起，变成一个列表；只能将两个列表连接成一个列表。join() 函数中 $separator 除了默认值 auto 之外，还有 comma 和 space 两个值，其中 comma 值指定列表中的列表项值之间使用逗号（,）分隔，space 值指定列表中的列表项值之间使用空格（ ）分隔
 		- 如果列表中的第一个列表中每个值之间使用的是逗号（,），那么 join() 函数合并的列表中每个列表项之间使用逗号
 		- 如果列表中的第一个列表中每个值之间使用的是空格，那么 join() 函数合并的列表中每个列表项之间使用空格分隔
 		- 如果当两个列表中的列表项小于1时，将会以空格分隔
-	- append($list1, $val, [$separator])：将某个值放在列表的最后；	
+	- `append($list1, $val, [$separator])`：将某个值放在列表的最后；	
     	- 如果列表只有一个列表项时，那么插入进来的值将和原来的值会以空格的方式分隔。
     	- 如果列表中列表项是以空格分隔列表项，那么插入进来的列表项也将以空格分隔；
     	- 如果列表中列表项是以逗号分隔列表项，那么插入进来的列表项也将以逗号分隔。
     	- append() 函数中，可以显示的设置 $separator 参数
     		- 如果取值为 comma 将会以逗号分隔列表项
     		- 如果取值为 space 将会以空格分隔列表项
-	- zip($lists…)：将几个列表结合成一个多维的列表；使用zip()函数时，每个单一的列表个数值必须是相同的
-	- index($list, $value)：返回一个值在列表中的位置值。index() 函数中，如果指定的值不在列表中（没有找到相应的值），那么返回的值将是 false，相反就会返回对应的值在列表中所处的位置
+	- `zip($lists…)`：将几个列表结合成一个多维的列表；使用zip()函数时，每个单一的列表个数值必须是相同的
+	- `index($list, $value)`：返回一个值在列表中的位置值。index() 函数中，如果指定的值不在列表中（没有找到相应的值），那么返回的值将是 false，相反就会返回对应的值在列表中所处的位置
 
 * ntrospection 函数包括了几个判断型函数：
-    - type-of($value)：返回一个值的类型
+    - `type-of($value)`：返回一个值的类型
     	- number 为数值型。
 		- string 为字符串型。
 		- bool 为布尔型。
 		- color 为颜色型
-    - unit($number)：返回一个值的单位。碰到复杂的计算时，其能根据运算得到一个“多单位组合”的值，不过只充许乘、除运算
-    - unitless($number)：判断一个值是否带有单位
-    - comparable($number-1, $number-2)：判断两个值是否可以做加、减和合并
+    - `unit($number)`：返回一个值的单位。碰到复杂的计算时，其能根据运算得到一个“多单位组合”的值，不过只充许乘、除运算
+    - `unitless($number)`：判断一个值是否带有单位
+    - `comparable($number-1, $number-2)`：判断两个值是否可以做加、减和合并
 
 * 三元条件函数，`if($condition,$if-true,$if-false)`
 
@@ -262,55 +317,80 @@ Sass笔记
 		);
 
 * Sass 中 map 自身带了七个函数：
-    - map-get($map,$key)：根据给定的 key 值，返回 map 中相关的值。
-    - map-merge($map1,$map2)：将两个 map 合并成一个新的 map。
-    - map-remove($map,$key)：从 map 中删除一个 key，返回一个新 map。
-    - map-keys($map)：返回 map 中所有的 key。
-    - map-values($map)：返回 map 中所有的 value。
-    - map-has-key($map,$key)：根据给定的 key 值判断 map 是否有对应的 value 值，如果有返回 true，否则返回 false。
-    - keywords($args)：返回一个函数的参数，这个参数可以动态的设置 key 和 value
+    - `map-get($map,$key)`：根据给定的 key 值，返回 map 中相关的值。
+    - `map-merge($map1,$map2)`：将两个 map 合并成一个新的 map。
+    - `map-remove($map,$key)`：从 map 中删除一个 key，返回一个新 map。
+    - `map-keys($map)`：返回 map 中所有的 key。
+    - `map-values($map)`：返回 map 中所有的 value。
+    - `map-has-key($map,$key)`：根据给定的 key 值判断 map 是否有对应的 value 值，如果有返回 true，否则返回 false。
+    - `keywords($args)`：返回一个函数的参数，这个参数可以动态的设置 key 和 value
 
 * RGB 颜色只是颜色中的一种表达式，其中 R 是 red 表示红色，G 是 green 表示绿色而 B 是 blue 表示蓝色。在 Sass 中为 RGB 颜色提供六种函数：
-    - rgb($red,$green,$blue)：根据红、绿、蓝三个值创建一个颜色；rgb() 函数只能快速的将一个 rgb 颜色转换成十六进制颜色表达
-    - rgba($red,$green,$blue,$alpha)：根据红、绿、蓝和透明度值创建一个颜色；
-    - red($color)：从一个颜色中获取其中红色值；
-    - green($color)：从一个颜色中获取其中绿色值；
-    - blue($color)：从一个颜色中获取其中蓝色值；
-    - mix($color-1,$color-2,[$weight])：把两种颜色混合在一起，$weight 为 合并的比例（选择权重）
+    - `rgb($red,$green,$blue)`：根据红、绿、蓝三个值创建一个颜色；rgb() 函数只能快速的将一个 rgb 颜色转换成十六进制颜色表达
+    - `rgba($red,$green,$blue,$alpha)`：根据红、绿、蓝和透明度值创建一个颜色；
+    - `red($color)`：从一个颜色中获取其中红色值；
+    - `green($color)`：从一个颜色中获取其中绿色值；
+    - `blue($color)`：从一个颜色中获取其中蓝色值；
+    - `mix($color-1,$color-2,[$weight])`：把两种颜色混合在一起，$weight 为 合并的比例（选择权重）
+
+* 透明度运算
+	- `alpha($color) / opacity($color)` : 获取颜色的透明度
+	- `rgba($color, $alpha)` : 改变颜色的透明度值
+	- `opacify($color, $amount) / fade-in($color, $amount`) : 使颜色更不透明
+	- `transparentize($color, $amount) / fade-out($color, $amount)` : 使颜色更加透明
 
 * HSL 颜色函数包括哪些具体的函数，所起的作用是什么：
-	- hsl($hue,$saturation,$lightness)：通过色相（hue）、饱和度(saturation)和亮度（lightness）的值创建一个颜色；
-	- hsla($hue,$saturation,$lightness,$alpha)：通过色相（hue）、饱和度(saturation)、亮度（lightness）和透明（alpha）的值创建一个颜色；
-	- hue($color)：从一个颜色中获取色相（hue）值；
-	- saturation($color)：从一个颜色中获取饱和度（saturation）值；
-	- lightness($color)：从一个颜色中获取亮度（lightness）值；
-	- adjust-hue($color,$degrees)：通过改变一个颜色的色相值，创建一个新的颜色；
-	- lighten($color,$amount)：通过改变颜色的亮度值，让颜色变亮，创建一个新的颜色；
-	- darken($color,$amount)：通过改变颜色的亮度值，让颜色变暗，创建一个新的颜色；
-	- saturate($color,$amount)：通过改变颜色的饱和度值，让颜色更饱和，从而创建一个新的颜色
-	- desaturate($color,$amount)：通过改变颜色的饱和度值，让颜色更少的饱和，从而创建出一个新的颜色；
-	- grayscale($color)：将一个颜色变成灰色，相当于desaturate($color,100%);
-	- complement($color)：返回一个补充色，相当于adjust-hue($color,180deg);
-	invert($color)：反回一个反相色，红、绿、蓝色值倒过来，而透明度不变。
+	- `hsl($hue,$saturation,$lightness)`：通过色相（hue）、饱和度(saturation)和亮度（lightness）的值创建一个颜色；
+	- `hsla($hue,$saturation,$lightness,$alpha)`：通过色相（hue）、饱和度(saturation)、亮度（lightness）和透明（alpha）的值创建一个颜色；
+	- `hue($color)`：从一个颜色中获取色相（hue）值；
+	- `saturation($color)`：从一个颜色中获取饱和度（saturation）值；
+	- `lightness($color)`：从一个颜色中获取亮度（lightness）值；
+	- `adjust-hue($color,$degrees)`：通过改变一个颜色的色相值，创建一个新的颜色；
+	- `lighten($color,$amount)`：通过改变颜色的亮度值，让颜色变亮，创建一个新的颜色；
+	- `darken($color,$amount)`：通过改变颜色的亮度值，让颜色变暗，创建一个新的颜色；
+	- `saturate($color,$amount)`：通过改变颜色的饱和度值，让颜色更饱和，从而创建一个新的颜色
+	- `desaturate($color,$amount)`：通过改变颜色的饱和度值，让颜色更少的饱和，从而创建出一个新的颜色；
+	- `grayscale($color)`：将一个颜色变成灰色，相当于desaturate($color,100%);
+	- `complement($color)`：返回一个补充色，相当于adjust-hue($color,180deg);
+	- `invert($color)`：反回一个反相色，红、绿、蓝色值倒过来，而透明度不变。
 
-* @import，引入 SCSS 和 Sass 文件
+* `@import`，引入 SCSS 和 Sass 文件
     - 如果文件的扩展名是 .css。
     - 如果文件名以 http:// 开头。
     - 如果文件名是 url()。
     - 如果 @import 包含了任何媒体查询（media queries）。
 
-* @media 指令
+* `@media` 指令
 
 * Sass 中的 @extend 是用来扩展选择器或占位符
 
-* @at-root 从字面上解释就是跳出根元素。当你选择器嵌套多层之后，想让某个选择器跳出，此时就可以使用 @at-root
+* `@at-root` 从字面上解释就是跳出根元素。当你选择器嵌套多层之后，想让某个选择器跳出，此时就可以使用 @at-root
 
-* @debug 在 Sass 中是用来调试的，当你的在 Sass 的源码中使用了 @debug 指令之后，Sass 代码在编译出错时，在命令终端会输出你设置的提示 Bug
+* `@debug` 在 Sass 中是用来调试的，当你的在 Sass 的源码中使用了 @debug 指令之后，Sass 代码在编译出错时，在命令终端会输出你设置的提示 Bug
 
-* @warn 和 @debug 功能类似，用来帮助我们更好的调试 Sass
+* `@warn` 和 `@debug` 功能类似，用来帮助我们更好的调试 Sass
 
-* @error 和 @warn、@debug 功能是如出一辙
+* `@error` 和 `@warn`、`@debug` 功能是如出一辙
 
+## Sass 自定义函数 ##
+
+* 函数是可返回一个Sass任何数据类型单一值的代码块。创建自定义函数需要两个Sass指令@function和@return。前者创建函数，后者表明了函数将返回的值
+
+		@function function-name($args) { // 函数名使用破折号和下划线是一样的
+			@return value-to-be-returned; 
+		}
+
+* 函数用处，返回一个值
+
+		$total: 8; 
+		@function column-width($col) { 
+			@return percentage($col/$total); 
+		} 
+		@for $i from 1 through $total { 
+			.col-#/{$i/} { 
+				width: column-width($i) 
+			};  
+		}
 
 
 	

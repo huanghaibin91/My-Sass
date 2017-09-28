@@ -1,9 +1,40 @@
+// 根据浏览器前缀添加属性
+$prefix-for-webkit: true !default;
+$prefix-for-mozilla: true !default;
+$prefix-for-microsoft: true !default;
+$prefix-for-opera: true !default;
+$prefix-for-spec: true !default;
+// $prefixes 参数为一个列表，例：webkit moz ms o spec
+@mixin prefixer ($property, $value, $prefixes) {
+    @each $prefix in $prefixes {
+        @if $prefix == webkit and $prefix-for-webkit == true {
+            -webkit-#{$property}: $value;
+        }
+        @else if $prefix == moz and $prefix-for-mozilla == true {
+            -moz-#{$property}: $value;
+        }
+        @else if $prefix == ms and $prefix-for-microsoft == true {
+            -ms-#{$property}: $value;
+        }
+        @else if $prefix == o and $prefix-for-opera == true {
+            -o-#{$property}: $value;
+        }
+        // spec 浏览器写法
+        @else if $prefix == spec and $prefix-for-spec == true {
+            #{$property}: $value;
+        }
+        @else {
+            @warn "Unrecognized prefix: #{$prefix}";
+        }
+    }
+}
+
 // inline-block
 $inline-block-alignment: middle !default; // 设置一个默认对齐方式
 // 跨浏览器实现inline-block
 @mixin inline-block ($alignment: $inline-block-alignment) {
     display: inline-block;
-    @if $alignment and $alignment != none {
+    @if $alignment and $alignment !=none {
         vertical-align: $alignment;
     }
     @if $legacy-support-for-ie {
@@ -14,6 +45,7 @@ $inline-block-alignment: middle !default; // 设置一个默认对齐方式
 }
 
 // 清除浮动
+$legacy-support-for-ie = true;
 // 混合宏格式
 @mixin clearfix {
     @if $legacy-support-for-ie {
@@ -29,6 +61,7 @@ $inline-block-alignment: middle !default; // 设置一个默认对齐方式
         overflow: hidden;
     }
 }
+
 // 占位符格式
 %clearfix {
     @include clearfix;
@@ -50,6 +83,7 @@ $inline-block-alignment: middle !default; // 设置一个默认对齐方式
         height: 150%;
     }
 }
+
 // 占位符格式
 %ir {
     @include ir;
@@ -63,14 +97,15 @@ $inline-block-alignment: middle !default; // 设置一个默认对齐方式
     white-space: nowrap;
     width: 100% - $substract;
 }
+
 // 占位符格式 
 %singleline-ellipsis {
     @include singleline-ellipsis;
 }
 
 // 表单disabled
- @mixin disabled ($bgColor: #e6e6e6,$textColor:#ababab) { 
-    background-color: $bgColor !important; 
-    color: $textColor !important; 
-    cursor: not-allowed !important; 
+@mixin disabled ($bgColor: #e6e6e6, $textColor:#ababab) {
+    background-color: $bgColor !important;
+    color: $textColor !important;
+    cursor: not-allowed !important;
 }
