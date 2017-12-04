@@ -50,9 +50,9 @@ Sass笔记
 		
 		$box-shadow:0 0 3px rgba(0,0,0,0.3),inset 0 0 3px rgba(255,255,255,0.3);
 		@mixin box-shadow($shadow...){ 
-			-webkit-box-shadow:$shadow; 
-			-moz-box-shadow:$shadow; 
-			box-shadow:$shadow; 
+			-webkit-box-shadow: $shadow; 
+			-moz-box-shadow: $shadow; 
+			box-shadow: $shadow; 
 		}
 
 * 变量如果用在属性或者选择器上，就得以`#{}`包裹起来
@@ -60,16 +60,16 @@ Sass笔记
 		$btnClass: btn !default; 
 		$borderDirection: top !default; 
 		.#{$btnClass}{ 
-			border-#{$borderDirection}:1px solid #ccc; 
+			border-#{$borderDirection}: 1px solid #ccc; 
 		}
 
 * 多个值声明在一个变量中，通过`nth($var,index)`来获取第几个值
 
 		$linkColor: red blue !default; 
 		a { 
-			color:nth($linkColor,1); 
+			color: nth($linkColor,1); 
 			&:hover{ 
-				color:nth($linkColor,2); 
+				color: nth($linkColor,2); 
 			} 
 		}
 
